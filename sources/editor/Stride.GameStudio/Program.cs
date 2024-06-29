@@ -1,5 +1,5 @@
-// Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
-// Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
+namespace Stride.GameStudio;
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -13,7 +13,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
-
 using Stride.Core.Assets;
 using Stride.Core.Assets.Editor;
 using Stride.Core.Assets.Editor.Components.TemplateDescriptions.ViewModels;
@@ -49,22 +48,22 @@ using Stride.GameStudio.Services;
 using Stride.Core.Presentation.ViewModels;
 using Stride.Core.Presentation.Services;
 
-namespace Stride.GameStudio;
 
 public static class Program
 {
-    private static App app;
-    private static IntPtr windowHandle;
-    private static bool terminating;
-    private static Dispatcher mainDispatcher;
-    private static RenderDocManager renderDocManager;
     private static readonly ConcurrentQueue<string> LogRingbuffer = new();
+
+    private static App              app;
+    private static IntPtr           windowHandle;
+    private static bool             terminating;
+    private static Dispatcher       mainDispatcher;
+    private static RenderDocManager renderDocManager;
 
     [STAThread]
     public static void Main()
     {
         AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-        EditorPath.EditorTitle = StrideGameStudio.EditorName;
+        EditorPath.EditorTitle                     =  StrideGameStudio.EditorName;
 
         if (IntPtr.Size == 4)
         {
@@ -88,13 +87,13 @@ public static class Program
             try
             {
                 // Environment.GetCommandLineArgs correctly process arguments regarding the presence of '\' and '"'
-                var args = Environment.GetCommandLineArgs().Skip(1).ToList();
+                var args               = Environment.GetCommandLineArgs().Skip(1).ToList();
                 var startupSessionPath = StrideEditorSettings.StartupSession.GetValue();
-                var lastSessionPath = EditorSettings.ReloadLastSession.GetValue() ? mru.MostRecentlyUsedFiles.FirstOrDefault() : null;
+                var lastSessionPath    = EditorSettings.ReloadLastSession.GetValue() ? mru.MostRecentlyUsedFiles.FirstOrDefault() : null;
                 var initialSessionPath = !UPath.IsNullOrEmpty(startupSessionPath) ? startupSessionPath : lastSessionPath?.FilePath;
 
                 // Handle arguments
-                for (var i = 0; i < args.Count; i++)
+                for (var i = 0 ; i < args.Count ; i++)
                 {
                     if (args[i] == "/LauncherWindowHandle")
                     {
@@ -112,7 +111,7 @@ public static class Program
                     {
                         // TODO: RenderDoc is not working here (when not in debug)
                         GameStudioPreviewService.DisablePreview = true;
-                        renderDocManager = new RenderDocManager();
+                        renderDocManager                        = new RenderDocManager();
                         renderDocManager.Initialize();
                     }
                     else if (args[i] == "/RecordEffects")
@@ -124,6 +123,7 @@ public static class Program
                         initialSessionPath = args[i];
                     }
                 }
+
                 RuntimeHelpers.RunModuleConstructor(typeof(Asset).Module.ModuleHandle);
 
                 //listen to logger for crash report
@@ -169,6 +169,7 @@ public static class Program
     }
 
     private sealed record CrashReportArgs(int Location, Exception Exception, string[] Log, string ThreadName);
+
     private static void CrashReport(object data)
     {
         var args = (CrashReportArgs)data;
@@ -222,9 +223,9 @@ public static class Program
             }
             catch (Exception e)
             {
-                var message = "Could not find a compatible version of MSBuild.\r\n\r\n" +
+                var message = "Could not find a compatible version of MSBuild.\r\n\r\n"                                                                                                                           +
                               "Check that you have a valid installation with the required workloads, or go to [www.visualstudio.com/downloads](https://www.visualstudio.com/downloads) to install a new one.\r\n" +
-                              $"Also make sure you have the latest [.NET {PackageSessionPublicHelper.NetMajorVersion} SDK](https://dotnet.microsoft.com/) \r\n\r\n" +
+                              $"Also make sure you have the latest [.NET {PackageSessionPublicHelper.NetMajorVersion} SDK](https://dotnet.microsoft.com/) \r\n\r\n"                                               +
                               e;
                 await serviceProvider.Get<IDialogService>().MessageBoxAsync(message, Core.Presentation.Services.MessageBoxButton.OK, Core.Presentation.Services.MessageBoxImage.Error);
                 app.Shutdown();
@@ -254,12 +255,8 @@ public static class Program
             // No session successfully loaded, open the new/open project window
             bool? completed;
             // The user might cancel after chosing a template to instantiate, in this case we'll reopen the window
-            var startupWindow = new ProjectSelectionWindow
-            {
-                WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                ShowInTaskbar = true,
-            };
-            var viewModel = new NewOrOpenSessionTemplateCollectionViewModel(serviceProvider, startupWindow);
+            var startupWindow = new ProjectSelectionWindow { WindowStartupLocation = WindowStartupLocation.CenterScreen, ShowInTaskbar = true, };
+            var viewModel     = new NewOrOpenSessionTemplateCollectionViewModel(serviceProvider, startupWindow);
             startupWindow.Templates = viewModel;
             startupWindow.ShowDialog();
 
@@ -268,8 +265,8 @@ public static class Program
             {
                 // Clean existing entry in the MRU data
                 var directory = startupWindow.NewSessionParameters.OutputDirectory;
-                var name = startupWindow.NewSessionParameters.OutputName;
-                var mruData = new MRUAdditionalDataCollection(InternalSettings.LoadProfileCopy, GameStudioInternalSettings.MostRecentlyUsedSessionsData, InternalSettings.WriteFile);
+                var name      = startupWindow.NewSessionParameters.OutputName;
+                var mruData   = new MRUAdditionalDataCollection(InternalSettings.LoadProfileCopy, GameStudioInternalSettings.MostRecentlyUsedSessionsData, InternalSettings.WriteFile);
                 mruData.RemoveFile(UFile.Combine(UDirectory.Combine(directory, name), new UFile(name + SessionViewModel.SolutionExtension)));
 
                 completed = await editor.NewSession(startupWindow.NewSessionParameters);
@@ -300,7 +297,7 @@ public static class Program
                 // When a project has been partially loaded, it might already have initialized some plugin that could conflict with
                 // the next attempt to start something. Better start the application again.
                 var commandLine = string.Join(" ", Environment.GetCommandLineArgs().Skip(1).Select(x => $"\"{x}\""));
-                var process = new Process { StartInfo = new ProcessStartInfo(typeof(Program).Assembly.Location, commandLine) };
+                var process     = new Process { StartInfo = new ProcessStartInfo(typeof(Program).Assembly.Location, commandLine) };
                 process.Start();
                 app.Shutdown();
                 return;
@@ -327,12 +324,8 @@ public static class Program
 
     private static void RestartApplication()
     {
-        var args = Environment.GetCommandLineArgs();
-        var startInfo = new ProcessStartInfo(Assembly.GetEntryAssembly().Location)
-        {
-            Arguments = string.Join(" ", args.Skip(1)),
-            WorkingDirectory = Environment.CurrentDirectory,
-        };
+        var args      = Environment.GetCommandLineArgs();
+        var startInfo = new ProcessStartInfo(Assembly.GetEntryAssembly().Location) { Arguments = string.Join(" ", args.Skip(1)), WorkingDirectory = Environment.CurrentDirectory, };
         Process.Start(startInfo);
         Environment.Exit(0);
     }
@@ -341,11 +334,10 @@ public static class Program
     {
         // TODO: this should be done elsewhere
         var dispatcherService = new DispatcherService(Dispatcher.CurrentDispatcher);
-        var dialogService = new StrideDialogService(dispatcherService, StrideGameStudio.EditorName);
-        var pluginService = new PluginService();
-        var services = new List<object>{ new DispatcherService(Dispatcher.CurrentDispatcher), dialogService, pluginService };
-        if (renderDocManager != null)
-            services.Add(renderDocManager);
+        var dialogService     = new StrideDialogService(dispatcherService, StrideGameStudio.EditorName);
+        var pluginService     = new PluginService();
+        var services          = new List<object> { new DispatcherService(Dispatcher.CurrentDispatcher), dialogService, pluginService };
+        if (renderDocManager != null) services.Add(renderDocManager);
         var serviceProvider = new ViewModelServiceProvider(services);
         return serviceProvider;
     }
@@ -353,20 +345,7 @@ public static class Program
     private static void InitializeLanguageSettings()
     {
         TranslationManager.Instance.RegisterProvider(new GettextTranslationProvider());
-        TranslationManager.Instance.CurrentLanguage = EditorSettings.Language.GetValue() switch
-        {
-            SupportedLanguage.MachineDefault => CultureInfo.InstalledUICulture,
-            SupportedLanguage.English => new CultureInfo("en-US"),
-            SupportedLanguage.French => new CultureInfo("fr-FR"),
-            SupportedLanguage.Japanese => new CultureInfo("ja-JP"),
-            SupportedLanguage.Russian => new CultureInfo("ru-RU"),
-            SupportedLanguage.German => new CultureInfo("de-DE"),
-            SupportedLanguage.Spanish => new CultureInfo("es-ES"),
-            SupportedLanguage.ChineseSimplified => new CultureInfo("zh-Hans"),
-            SupportedLanguage.Italian => new CultureInfo("it-IT"),
-            SupportedLanguage.Korean => new CultureInfo("ko-KR"),
-            _ => throw new ArgumentException("Invalid language option"),
-        };
+        TranslationManager.Instance.CurrentLanguage = EditorSettings.Language.GetValue() switch { SupportedLanguage.MachineDefault => CultureInfo.InstalledUICulture, SupportedLanguage.English => new CultureInfo("en-US"), SupportedLanguage.French => new CultureInfo("fr-FR"), SupportedLanguage.Japanese => new CultureInfo("ja-JP"), SupportedLanguage.Russian => new CultureInfo("ru-RU"), SupportedLanguage.German => new CultureInfo("de-DE"), SupportedLanguage.Spanish => new CultureInfo("es-ES"), SupportedLanguage.ChineseSimplified => new CultureInfo("zh-Hans"), SupportedLanguage.Italian => new CultureInfo("it-IT"), SupportedLanguage.Korean => new CultureInfo("ko-KR"), _ => throw new ArgumentException("Invalid language option"), };
     }
 
     internal static void NotifyGameStudioStarted()

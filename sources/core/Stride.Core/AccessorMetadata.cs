@@ -1,8 +1,6 @@
-// Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
-// Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-
 namespace Stride.Core
 {
+
     /// <summary>
     /// Metadata used for providing attached getter/setter to a <see cref="PropertyKey"/>.
     /// </summary>
@@ -15,12 +13,14 @@ namespace Stride.Core
         /// <param name="value">The value to set</param>
         public delegate void SetterDelegate(ref PropertyContainer propertyContainer, object value);
 
+
         /// <summary>
         /// Getter delegate
         /// </summary>
         /// <param name="propertyContainer">The property container holding the value.</param>
         /// <returns>Returns the value</returns>
         public delegate object GetterDelegate(ref PropertyContainer propertyContainer);
+
 
         private readonly SetterDelegate setter;
         private readonly GetterDelegate getter;
@@ -56,4 +56,5 @@ namespace Stride.Core
             setter(ref obj, value);
         }
     }
+
 }

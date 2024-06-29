@@ -16,7 +16,7 @@ namespace Stride.Core.Assets.Editor
         public static string DefaultTempPath => Path.Combine(
             Path.GetTempPath(),
             ProductNameDirectory);
-
+      
         public static string EditorConfigPath => Path.Combine(UserDataPath, "GameStudioSettings.conf");
 
         public static string InternalConfigPath => Path.Combine(UserDataPath, "GameStudioInternal.conf");

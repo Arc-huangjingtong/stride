@@ -25,6 +25,7 @@ namespace Stride.PrivacyPolicy
                     Stride40Accepted = value != null && value.ToLowerInvariant() == "true";
                 }
             }
+            
         }
 
         /// <summary>
