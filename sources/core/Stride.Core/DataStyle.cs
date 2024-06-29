@@ -1,26 +1,14 @@
-// Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
-// Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-namespace Stride.Core
+namespace Stride.Core;
+
+/// <summary> 指定在必须序列化数组/列表或字典/映射时用于文本序列化的样式 </summary>
+public enum DataStyle
 {
-    /// <summary>
-    /// Specifies the style used for textual serialization when an array/list or a dictionary/map must
-    /// be serialized.
-    /// </summary>
-    public enum DataStyle
-    {
-        /// <summary>
-        /// Let the emitter choose the style.
-        /// </summary>
-        Any,
+    /// <summary> 让发射器选择样式 </summary>
+    Any,
 
-        /// <summary>
-        /// The normal style (One line per item, structured by space).
-        /// </summary>
-        Normal,
+    /// <summary> 正常样式（每个项目一行，由空格结构化） </summary>
+    Normal,
 
-        /// <summary>
-        /// The compact style (style embraced by [] or {})
-        /// </summary>
-        Compact,
-    }
+    /// <summary> 紧凑样式（由[]或{}括起来的样式） </summary>
+    Compact,
 }

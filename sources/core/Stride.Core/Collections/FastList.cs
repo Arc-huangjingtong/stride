@@ -1,5 +1,7 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
+
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,8 +12,10 @@ using Stride.Core.Annotations;
 using Stride.Core.Serialization;
 using Stride.Core.Serialization.Serializers;
 
+
 namespace Stride.Core.Collections
 {
+
     /// <summary>
     /// <para>Similar to <see cref="List{T}"/>, with direct access to underlying array.</para>
     /// <para>It is recommended to use Spans instead: <see href="https://github.com/stride3d/stride/discussions/2298#discussioncomment-9779439"/></para>
@@ -20,7 +24,7 @@ namespace Stride.Core.Collections
     [DataSerializer(typeof(ListAllSerializer<,>), Mode = DataSerializerGenericMode.TypeAndGenericArguments)]
     [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     [Obsolete(".NET Lists can be faster in the latest .NET versions.")]
-    public class FastList<T> : IList<T>, IReadOnlyList<T>, ICollection<T>, IEnumerable<T>, IEnumerable
+    public class FastList <T> : IList<T>, IReadOnlyList<T>, ICollection<T>, IEnumerable<T>, IEnumerable
     {
         // Fields
         private const int DefaultCapacity = 4;
@@ -51,7 +55,7 @@ namespace Stride.Core.Collections
             }
             else
             {
-                size = 0;
+                size  = 0;
                 Items = new T[DefaultCapacity];
                 using (var enumerator = collection.GetEnumerator())
                 {
@@ -82,6 +86,7 @@ namespace Stride.Core.Collections
                         {
                             Array.Copy(Items, 0, destinationArray, 0, size);
                         }
+
                         Items = destinationArray;
                     }
                     else
@@ -94,12 +99,14 @@ namespace Stride.Core.Collections
 
         #region IList<T> Members
 
+
         public void Add(T item)
         {
             if (size == Items.Length)
             {
                 EnsureCapacity(size + 1);
             }
+
             Items[size++] = item;
         }
 
@@ -118,23 +125,26 @@ namespace Stride.Core.Collections
         {
             if (item == null)
             {
-                for (var j = 0; j < size; j++)
+                for (var j = 0 ; j < size ; j++)
                 {
                     if (Items[j] == null)
                     {
                         return true;
                     }
                 }
+
                 return false;
             }
+
             var comparer = EqualityComparer<T>.Default;
-            for (var i = 0; i < size; i++)
+            for (var i = 0 ; i < size ; i++)
             {
                 if (comparer.Equals(Items[i], item))
                 {
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -154,10 +164,12 @@ namespace Stride.Core.Collections
             {
                 EnsureCapacity(size + 1);
             }
+
             if (index < size)
             {
                 Array.Copy(Items, index, Items, index + 1, size - index);
             }
+
             Items[index] = item;
             size++;
         }
@@ -170,6 +182,7 @@ namespace Stride.Core.Collections
                 RemoveAt(index);
                 return true;
             }
+
             return false;
         }
 
@@ -181,6 +194,7 @@ namespace Stride.Core.Collections
             {
                 Array.Copy(Items, index + 1, Items, index, size - index);
             }
+
             Items[size] = default(T);
         }
 
@@ -211,6 +225,7 @@ namespace Stride.Core.Collections
         }
 
         bool ICollection<T>.IsReadOnly => false;
+
 
         #endregion
 
@@ -282,6 +297,7 @@ namespace Stride.Core.Collections
                 {
                     num = min;
                 }
+
                 Capacity = num;
             }
         }
@@ -293,13 +309,14 @@ namespace Stride.Core.Collections
 
         public T Find(Predicate<T> match)
         {
-            for (var i = 0; i < size; i++)
+            for (var i = 0 ; i < size ; i++)
             {
                 if (match(Items[i]))
                 {
                     return Items[i];
                 }
             }
+
             return default(T);
         }
 
@@ -307,13 +324,14 @@ namespace Stride.Core.Collections
         public FastList<T> FindAll(Predicate<T> match)
         {
             var list = new FastList<T>();
-            for (var i = 0; i < size; i++)
+            for (var i = 0 ; i < size ; i++)
             {
                 if (match(Items[i]))
                 {
                     list.Add(Items[i]);
                 }
             }
+
             return list;
         }
 
@@ -330,25 +348,27 @@ namespace Stride.Core.Collections
         public int FindIndex(int startIndex, int count, Predicate<T> match)
         {
             var num = startIndex + count;
-            for (var i = startIndex; i < num; i++)
+            for (var i = startIndex ; i < num ; i++)
             {
                 if (match(Items[i]))
                 {
                     return i;
                 }
             }
+
             return -1;
         }
 
         public T FindLast(Predicate<T> match)
         {
-            for (var i = size - 1; i >= 0; i--)
+            for (var i = size - 1 ; i >= 0 ; i--)
             {
                 if (match(Items[i]))
                 {
                     return Items[i];
                 }
             }
+
             return default(T);
         }
 
@@ -365,19 +385,20 @@ namespace Stride.Core.Collections
         public int FindLastIndex(int startIndex, int count, Predicate<T> match)
         {
             var num = startIndex - count;
-            for (var i = startIndex; i > num; i--)
+            for (var i = startIndex ; i > num ; i--)
             {
                 if (match(Items[i]))
                 {
                     return i;
                 }
             }
+
             return -1;
         }
 
         public void ForEach(Action<T> action)
         {
-            for (var i = 0; i < size; i++)
+            for (var i = 0 ; i < size ; i++)
             {
                 action(Items[i]);
             }
@@ -420,15 +441,17 @@ namespace Stride.Core.Collections
                     {
                         Array.Copy(Items, index, Items, index + count, size - index);
                     }
+
                     if (this == is2)
                     {
-                        Array.Copy(Items, 0, Items, index, index);
+                        Array.Copy(Items, 0,             Items, index,     index);
                         Array.Copy(Items, index + count, Items, index * 2, size - index);
                     }
                     else
                     {
                         is2.CopyTo(Items, index);
                     }
+
                     size += count;
                 }
             }
@@ -455,6 +478,7 @@ namespace Stride.Core.Collections
             {
                 return -1;
             }
+
             return LastIndexOf(item, size - 1, size);
         }
 
@@ -469,6 +493,7 @@ namespace Stride.Core.Collections
             {
                 return -1;
             }
+
             return Array.LastIndexOf(Items, item, index, count);
         }
 
@@ -479,10 +504,12 @@ namespace Stride.Core.Collections
             {
                 index++;
             }
+
             if (index >= size)
             {
                 return 0;
             }
+
             var num2 = index + 1;
             while (num2 < size)
             {
@@ -490,13 +517,15 @@ namespace Stride.Core.Collections
                 {
                     num2++;
                 }
+
                 if (num2 < size)
                 {
                     Items[index++] = Items[num2++];
                 }
             }
+
             Array.Clear(Items, index, size - index);
-            var num3 = size - index;
+            var num3 = size                - index;
             size = index;
             return num3;
         }
@@ -510,6 +539,7 @@ namespace Stride.Core.Collections
                 {
                     Array.Copy(Items, index + count, Items, index, size - index);
                 }
+
                 Array.Clear(Items, size, count);
             }
         }
@@ -567,35 +597,35 @@ namespace Stride.Core.Collections
 
         public bool TrueForAll(Predicate<T> match)
         {
-            for (var i = 0; i < size; i++)
+            for (var i = 0 ; i < size ; i++)
             {
                 if (!match(Items[i]))
                 {
                     return false;
                 }
             }
+
             return true;
         }
 
         #region Nested type: Enumerator
 
+
         [StructLayout(LayoutKind.Sequential)]
         public struct Enumerator : IEnumerator<T>, IDisposable, IEnumerator
         {
             private readonly FastList<T> list;
-            private int index;
-            private T current;
+            private          int         index;
+            private          T           current;
 
             internal Enumerator(FastList<T> list)
             {
                 this.list = list;
-                index = 0;
-                current = default(T);
+                index     = 0;
+                current   = default(T);
             }
 
-            public void Dispose()
-            {
-            }
+            public void Dispose() { }
 
             public bool MoveNext()
             {
@@ -606,12 +636,13 @@ namespace Stride.Core.Collections
                     index++;
                     return true;
                 }
+
                 return MoveNextRare();
             }
 
             private bool MoveNextRare()
             {
-                index = list.size + 1;
+                index   = list.size + 1;
                 current = default(T);
                 return false;
             }
@@ -622,11 +653,13 @@ namespace Stride.Core.Collections
 
             void IEnumerator.Reset()
             {
-                index = 0;
+                index   = 0;
                 current = default(T);
             }
         }
 
+
         #endregion
     }
+
 }

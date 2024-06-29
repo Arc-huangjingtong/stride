@@ -1,9 +1,13 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
+
+
 using System;
+
 
 namespace Stride.Core
 {
+
     /// <summary>
     /// An attribute to modify the output style of a sequence or mapping. 
     /// This attribute can be apply directly on a type or on a property/field.
@@ -41,4 +45,5 @@ namespace Stride.Core
         /// <value>The style.</value>
         public ScalarStyle ScalarStyle { get; }
     }
+
 }

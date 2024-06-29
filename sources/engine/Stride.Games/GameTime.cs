@@ -1,163 +1,115 @@
-// Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
-// Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-//
-// Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+namespace Stride.Games;
 
 using System;
 
-namespace Stride.Games
+
+/// <summary> 当前用于变量步长（实时）或固定步长（游戏时间）游戏的时间 </summary>
+public class GameTime
 {
-    /// <summary>
-    /// Current timing used for variable-step (real time) or fixed-step (game time) games.
-    /// </summary>
-    public class GameTime
+    /// <summary> 初始化 <see cref="GameTime" /> 类的新实例。 </summary>
+    /// <param name="totalTime"> 自游戏开始以来的总游戏时间 </param>
+    /// <param name="elapsedTime"> 自上次更新以来的经过的游戏时间 </param>
+    public GameTime(TimeSpan totalTime = default, TimeSpan elapsedTime = default)
     {
-        private TimeSpan accumulatedElapsedTime;
-        private int accumulatedFrameCountPerSecond;
-        private double factor;
-
-        #region Constructors and Destructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GameTime" /> class.
-        /// </summary>
-        public GameTime()
-        {
-            accumulatedElapsedTime = TimeSpan.Zero;
-            factor = 1;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GameTime" /> class.
-        /// </summary>
-        /// <param name="totalTime">The total game time since the start of the game.</param>
-        /// <param name="elapsedTime">The elapsed game time since the last update.</param>
-        public GameTime(TimeSpan totalTime, TimeSpan elapsedTime)
-        {
-            Total = totalTime;
-            Elapsed = elapsedTime;
-            accumulatedElapsedTime = TimeSpan.Zero;
-            factor = 1;
-        }
-
-        #endregion
-
-        #region Public Properties
-
-        /// <summary>
-        /// Gets the elapsed game time since the last update
-        /// </summary>
-        /// <value>The elapsed game time.</value>
-        public TimeSpan Elapsed { get; private set; }
-
-        /// <summary>
-        /// Gets the amount of game time since the start of the game.
-        /// </summary>
-        /// <value>The total game time.</value>
-        public TimeSpan Total { get; private set; }
-
-        /// <summary>
-        /// Gets the current frame count since the start of the game.
-        /// </summary>
-        public int FrameCount { get; private set; }
-
-        /// <summary>
-        /// Gets the number of frame per second (FPS) for the current running game.
-        /// </summary>
-        /// <value>The frame per second.</value>
-        public float FramePerSecond { get; private set; }
-
-        /// <summary>
-        /// Gets the time per frame.
-        /// </summary>
-        /// <value>The time per frame.</value>
-        public TimeSpan TimePerFrame { get; private set; }
-
-        /// <summary>
-        /// Gets a value indicating whether the <see cref="FramePerSecond"/> and <see cref="TimePerFrame"/> were updated for this frame.
-        /// </summary>
-        /// <value><c>true</c> if the <see cref="FramePerSecond"/> and <see cref="TimePerFrame"/> were updated for this frame; otherwise, <c>false</c>.</value>
-        public bool FramePerSecondUpdated { get; private set; }
-
-
-
-        /// <summary>
-        /// Gets the amount of time elapsed multiplied by the time factor.
-        /// </summary>
-        /// <value>The warped elapsed time</value>
-        public TimeSpan WarpElapsed { get; private set; }
-
-
-        /// <summary>
-        /// Gets or sets the time factor.<br/>
-        /// This value controls how much the warped time flows, this includes physics, animations and particles.
-        /// A value between 0 and 1 will slow time, a value above 1 will make it faster.
-        /// </summary>
-        /// <value>The multiply factor, a double value higher or equal to 0</value>
-        public double Factor
-        {
-            get => factor;
-            set => factor = value > 0 ? value : 0;
-        }
-
-
-        internal void Update(TimeSpan totalGameTime, TimeSpan elapsedGameTime, bool incrementFrameCount)
-        {
-            Total = totalGameTime;
-            Elapsed = elapsedGameTime;
-            WarpElapsed = TimeSpan.FromTicks((long)(Elapsed.Ticks * Factor));
-
-            FramePerSecondUpdated = false;
-
-            if (incrementFrameCount)
-            {
-                accumulatedElapsedTime += elapsedGameTime;
-                var accumulatedElapsedGameTimeInSecond = accumulatedElapsedTime.TotalSeconds;
-                if (accumulatedFrameCountPerSecond > 0 && accumulatedElapsedGameTimeInSecond > 1.0)
-                {
-                    TimePerFrame = TimeSpan.FromTicks(accumulatedElapsedTime.Ticks / accumulatedFrameCountPerSecond);
-                    FramePerSecond = (float)(accumulatedFrameCountPerSecond / accumulatedElapsedGameTimeInSecond);
-                    accumulatedFrameCountPerSecond = 0;
-                    accumulatedElapsedTime = TimeSpan.Zero;
-                    FramePerSecondUpdated = true;
-                }
-
-                accumulatedFrameCountPerSecond++;
-                FrameCount++;
-            }
-        }
-
-        internal void Reset(TimeSpan totalGameTime)
-        {
-            Update(totalGameTime, TimeSpan.Zero, false);
-            accumulatedElapsedTime = TimeSpan.Zero;
-            accumulatedFrameCountPerSecond = 0;
-            FrameCount = 0;
-        }
-
-        public void ResetTimeFactor()
-        {
-            factor = 1;
-        }
-
-        #endregion
+        Total                  = totalTime;
+        Elapsed                = elapsedTime;
+        accumulatedElapsedTime = TimeSpan.Zero;
+        factor                 = 1;
     }
+
+
+
+    /// <summary> 获取自上次更新以来的经过的游戏时间 </summary>
+    public TimeSpan Elapsed { get; private set; }
+
+    /// <summary> 获取自游戏开始以来的总游戏时间 </summary>
+    /// <value> 自游戏开始以来的总游戏时间 </value>
+    public TimeSpan Total { get; private set; }
+
+    /// <summary> 获取当前帧数，自游戏开始以来 </summary>
+    public int FrameCount { get; private set; }
+
+    /// <summary> 获取当前运行游戏的每秒帧数（FPS） </summary>
+    /// <value> 每秒帧数 </value>
+    public float FramePerSecond { get; private set; }
+
+    /// <summary> 获取每帧的时间 </summary>
+    /// <value> 每帧的时间 </value>
+    public TimeSpan TimePerFrame { get; private set; }
+
+    /// <summary> 获取一个值，该值指示是否为此帧更新了 <see cref="FramePerSecond" /> 和 <see cref="TimePerFrame" /> </summary>
+    /// <value> 如果为此帧更新了 <see cref="FramePerSecond" /> 和 <see cref="TimePerFrame" /> ，则为 <c>true</c> ；否则为 <c>false</c> </value>
+    public bool FramePerSecondUpdated { get; private set; }
+
+
+    /// <summary> 获取经过的时间乘以时间因子 </summary>
+    /// <value> 经过的时间 </value>
+    public TimeSpan WarpElapsed { get; private set; }
+
+
+    /// <summary> <br/>获取或设置时间因子
+    /// <br/>这个值控制扭曲时间的流动，包括物理、动画和粒子
+    /// <br/>0到1之间的值会减慢时间，大于1的值会加快时间 </summary>
+    /// <value> 乘数因子，一个大于或等于0的双精度值 </value>
+    public double Factor
+    {
+        get => factor;
+        set => factor = Math.Max(0, value);
+    }
+
+    private double factor;
+
+    /// <summary> 积累的经过的时间 </summary>
+    private TimeSpan accumulatedElapsedTime;
+
+    /// <summary> 每秒累积的帧数 </summary>
+    private int accumulatedFrameCountPerSecond;
+
+
+    /// <summary> 更新游戏时间 </summary>
+    internal void Update(TimeSpan totalGameTime, TimeSpan elapsedGameTime, bool incrementFrameCount)
+    {
+        Total       = totalGameTime;   // 从游戏开始到现在的总时间
+        Elapsed     = elapsedGameTime; // 从上次更新到现在的时间
+        WarpElapsed = TimeSpan.FromTicks((long)(Elapsed.Ticks * Factor));
+
+        FramePerSecondUpdated = false; // 重置帧率更新标志
+
+        if (!incrementFrameCount) // 如果需要增加帧数
+        {
+            return;
+        }
+
+        accumulatedElapsedTime += elapsedGameTime; // 累加经过的时间
+
+        var accumulatedElapsedGameTimeInSecond = accumulatedElapsedTime.TotalSeconds;
+
+
+        // 如果累积的帧数大于0且累积的每秒游戏时间大于1.0
+        if (accumulatedFrameCountPerSecond > 0 && accumulatedElapsedGameTimeInSecond > 1.0)
+        {
+            // 计算每帧的时间
+            TimePerFrame = TimeSpan.FromTicks(accumulatedElapsedTime.Ticks / accumulatedFrameCountPerSecond);
+            // 计算FPS
+            FramePerSecond = (float)(accumulatedFrameCountPerSecond / accumulatedElapsedGameTimeInSecond);
+            // 重置累积的帧数和时间
+            accumulatedFrameCountPerSecond = 0;
+            accumulatedElapsedTime         = TimeSpan.Zero;
+            FramePerSecondUpdated          = true;
+        }
+
+        accumulatedFrameCountPerSecond++; // 累加每秒帧数
+        FrameCount++;                     // 累加帧数
+    }
+
+    /// <summary> 重置游戏时间 </summary>
+    internal void Reset(TimeSpan totalGameTime)
+    {
+        Update(totalGameTime, TimeSpan.Zero, false);
+        accumulatedElapsedTime         = TimeSpan.Zero;
+        accumulatedFrameCountPerSecond = 0;
+        FrameCount                     = 0;
+    }
+
+    public void ResetTimeFactor() => factor = 1;
 }

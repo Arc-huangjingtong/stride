@@ -1,144 +1,82 @@
-// Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
-// Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-using System;
+namespace Stride.Games;
 
+using System;
 using Stride.Core;
 using Stride.Core.Serialization.Contents;
-using Stride.Games.Time;
 using Stride.Graphics;
 
-namespace Stride.Games
+
+/// <summary> interface：游戏接口 </summary>
+public interface IGame
 {
-    public interface IGame
-    {
-        /// <summary>
-        /// Occurs when [activated].
-        /// </summary>
-        event EventHandler<EventArgs> Activated;
+    /// <summary> Occurs when [activated](激活时) </summary>
+    event EventHandler<EventArgs> Activated;
 
-        /// <summary>
-        /// Occurs when [deactivated].
-        /// </summary>
-        event EventHandler<EventArgs> Deactivated;
+    /// <summary> Occurs when [deactivated](失活时) </summary>
+    event EventHandler<EventArgs> Deactivated;
 
-        /// <summary>
-        /// Occurs when [exiting].
-        /// </summary>
-        event EventHandler<EventArgs> Exiting;
+    /// <summary> Occurs when [exiting](退出时) </summary>
+    event EventHandler<EventArgs> Exiting;
 
-        /// <summary>
-        /// Occurs when [window created].
-        /// </summary>
-        event EventHandler<EventArgs> WindowCreated;
+    /// <summary> Occurs when [window created](窗体创建时) </summary>
+    event EventHandler<EventArgs> WindowCreated;
 
-        /// <summary>
-        /// Gets the current game time.
-        /// </summary>
-        /// <value>The current game time.</value>
-        GameTime UpdateTime { get; }
+    /// <summary> 获取当前游戏时间 </summary>
+    GameTime UpdateTime { get; }
 
-        /// <summary>
-        /// Gets the current draw time.
-        /// </summary>
-        /// <value>The current draw time.</value>
-        GameTime DrawTime { get; }
+    /// <summary> 获取当前绘制时间 </summary>
+    GameTime DrawTime { get; }
 
-        /// <summary>
-        /// Gets the draw interpolation factor, which is (<see cref="UpdateTime"/> - <see cref="DrawTime"/>) / <see cref="TargetElapsedTime"/>.
-        /// If <see cref="IsFixedTimeStep"/> is false, it will be 0 as <see cref="UpdateTime"/> and <see cref="DrawTime"/> will be equal.
-        /// </summary>
-        /// <value>
-        /// The draw interpolation factor.
-        /// </value>
-        float DrawInterpolationFactor { get; }
+    /// <summary> 获取绘制插值因子，即（<see cref="UpdateTime"/> - <see cref="DrawTime"/>）/ <see cref="TargetElapsedTime"/> </summary>
+    /// <remarks> 如果 <see cref="IsFixedTimeStep"/> 为 false，则为 0，因为 <see cref="UpdateTime"/> 和 <see cref="DrawTime"/> 将相等 </remarks>
+    float DrawInterpolationFactor { get; }
 
-        /// <summary>
-        /// Gets or sets the <see cref="ContentManager"/>.
-        /// </summary>
-        /// <value>The content manager.</value>
-        ContentManager Content { get; }
+    /// <summary> 获取或设置 <see cref="ContentManager"/> </summary>
+    ContentManager Content { get; }
 
-        /// <summary>
-        /// Gets the game components registered by this game.
-        /// </summary>
-        /// <value>The game components.</value>
-        GameSystemCollection GameSystems { get; }
+    /// <summary> 获取由此游戏注册的游戏组件 </summary>
+    GameSystemCollection GameSystems { get; }
 
-        /// <summary>
-        /// Gets the game context.
-        /// </summary>
-        /// <value>The game context.</value>
-        GameContext Context { get; }
+    /// <summary> 获取游戏上下文 </summary>
+    GameContext Context { get; }
 
-        /// <summary>
-        /// Gets the graphics device.
-        /// </summary>
-        /// <value>The graphics device.</value>
-        GraphicsDevice GraphicsDevice { get; }
+    /// <summary> 获取图形设备 </summary>
+    GraphicsDevice GraphicsDevice { get; }
 
-        /// <summary>
-        /// Gets the graphics context.
-        /// </summary>
-        /// <value>The graphics context.</value>
-        GraphicsContext GraphicsContext { get; }
+    /// <summary> 获取图形上下文 </summary>
+    GraphicsContext GraphicsContext { get; }
 
-        /// <summary>
-        /// Gets or sets the inactive sleep time.
-        /// </summary>
-        /// <value>The inactive sleep time.</value>
-        TimeSpan InactiveSleepTime { get; set; }
+    /// <summary> 获取或设置非活动睡眠时间 </summary>
+    TimeSpan InactiveSleepTime { get; set; }
 
-        /// <summary>
-        /// Gets a value indicating whether this instance is active.
-        /// </summary>
-        /// <value><c>true</c> if this instance is active; otherwise, <c>false</c>.</value>
-        bool IsActive { get; }
+    /// <summary> 获取或设置是否激活 </summary>
+    /// <value><c>true</c> if this instance is active; otherwise, <c>false</c>.</value>
+    bool IsActive { get; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance is fixed time step.
-        /// </summary>
-        /// <value><c>true</c> if this instance is fixed time step; otherwise, <c>false</c>.</value>
-        bool IsFixedTimeStep { get; set; }
+    /// <summary> 获取或设置一个值，该值指示此实例是否为固定时间步长 </summary>
+    /// <remarks> 如果为 true，则游戏将以固定时间步长运行，否则将以变量时间步长运行 </remarks>
+    bool IsFixedTimeStep { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether draw can happen as fast as possible, even when <see cref="IsFixedTimeStep"/> is set.
-        /// </summary>
-        /// <value><c>true</c> if this instance allows desychronized drawing; otherwise, <c>false</c>.</value>
-        bool IsDrawDesynchronized { get; set; }
+    /// <summary> 获取或设置是否允许绘制尽可能快地发生，即使 <see cref="IsFixedTimeStep"/> 已设置 </summary>
+    /// <remarks> 如果为 true，则游戏将尽可能快地绘制，即使 <see cref="IsFixedTimeStep"/> 已设置 </remarks>
+    bool IsDrawDesynchronized { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the mouse should be visible.
-        /// </summary>
-        /// <value><c>true</c> if the mouse should be visible; otherwise, <c>false</c>.</value>
-        bool IsMouseVisible { get; set; }
+    /// <summary> 获取或设置鼠标是否可见 </summary>
+    /// <remarks> 如果为 true，则鼠标可见；否则，不可见 </remarks>
+    bool IsMouseVisible { get; set; }
 
-        /// <summary>
-        /// Gets the launch parameters.
-        /// </summary>
-        /// <value>The launch parameters.</value>
-        LaunchParameters LaunchParameters { get; }
+    /// <summary> 获取启动参数 </summary>
+    LaunchParameters LaunchParameters { get; }
 
-        /// <summary>
-        /// Gets a value indicating whether is running.
-        /// </summary>
-        bool IsRunning { get; }
+    /// <summary> 获取一个值，指示是否正在运行 </summary>
+    bool IsRunning { get; }
 
-        /// <summary>
-        /// Gets the service container.
-        /// </summary>
-        /// <value>The service container.</value>
-        ServiceRegistry Services { get; }
+    /// <summary> 获取服务容器 </summary>
+    ServiceRegistry Services { get; }
 
-        /// <summary>
-        /// Gets or sets the target elapsed time.
-        /// </summary>
-        /// <value>The target elapsed time.</value>
-        TimeSpan TargetElapsedTime { get; set; }
+    /// <summary> 获取或设置目标经过时间 </summary>
+    TimeSpan TargetElapsedTime { get; set; }
 
-        /// <summary>
-        /// Gets the abstract window.
-        /// </summary>
-        /// <value>The window.</value>
-        GameWindow Window { get; }
-    }
+    /// <summary> 获取抽象窗口 </summary>
+    GameWindow Window { get; }
 }

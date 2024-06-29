@@ -1,42 +1,31 @@
-// Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
-// Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
+namespace Stride.Rendering.Lights;
 
+using System.Collections.Generic;
 using Stride.Core;
-using Stride.Core.Collections;
-using Stride.Engine;
 
-namespace Stride.Rendering.Lights
+
+/// <summary> 一个指定的 <see cref="RenderGroupMask"/> 的 <see cref="RenderLight"/> 列表. </summary>
+public class RenderLightCollection : List<RenderLight>
 {
     /// <summary>
-    /// A list of <see cref="RenderLight"/> for a specified <see cref="RenderGroupMask"/>.
+    /// Initializes a new instance of the <see cref="RenderLightCollection"/> class.
     /// </summary>
-    public class RenderLightCollection : FastList<RenderLight>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RenderLightCollection"/> class.
-        /// </summary>
-        public RenderLightCollection()
-        {
-        }
+    public RenderLightCollection() { }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RenderLightCollection"/> class.
-        /// </summary>
-        /// <param name="capacity">The capacity.</param>
-        public RenderLightCollection(int capacity)
-            : base(capacity)
-        {
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RenderLightCollection"/> class.
+    /// </summary>
+    /// <param name="capacity">The capacity.</param>
+    public RenderLightCollection(int capacity) : base(capacity) { }
 
-        /// <summary>
-        /// Gets or sets the culling mask.
-        /// </summary>
-        /// <value>The culling mask.</value>
-        public RenderGroupMask CullingMask { get; internal set; }
+    /// <summary>
+    /// Gets or sets the culling mask.
+    /// </summary>
+    /// <value>The culling mask.</value>
+    public RenderGroupMask CullingMask { get; internal set; }
 
-        /// <summary>
-        /// Tags attached.
-        /// </summary>
-        public PropertyContainer Tags;
-    }
+    /// <summary>
+    /// Tags attached.
+    /// </summary>
+    public PropertyContainer Tags;
 }

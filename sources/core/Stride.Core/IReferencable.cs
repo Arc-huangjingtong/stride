@@ -1,31 +1,16 @@
-// Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
-// Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
-namespace Stride.Core
+namespace Stride.Core;
+
+/// <summary> Base interface，所有可引用对象的基接口</summary>
+public interface IReferencable
 {
-    /// <summary>
-    /// Base interface for all referencable objects.
-    /// </summary>
-    public interface IReferencable
-    {
-        /// <summary>
-        /// Gets the reference count of this instance.
-        /// </summary>
-        /// <value>
-        /// The reference count.
-        /// </value>
-        int ReferenceCount { get; }
+    /// <summary> 获取此实例的引用计数。</summary>
+    int ReferenceCount { get; }
 
-        /// <summary>
-        /// Increments the reference count of this instance.
-        /// </summary>
-        /// <returns>The method returns the new reference count.</returns>
-        int AddReference();
+    /// <summary> 增加此实例的引用计数。</summary>
+    int AddReference();
 
-        /// <summary>
-        /// Decrements the reference count of this instance.
-        /// </summary>
-        /// <returns>The method returns the new reference count.</returns>
-        /// <remarks>When the reference count is going to 0, the component should release/dispose dependents objects.</remarks>
-        int Release();
-    }
+    /// <summary> 减少此实例的引用计数 </summary>
+    /// <returns> 方法返回新的引用计数 </returns>
+    /// <remarks> 当引用计数为0时，组件应释放/处理依赖对象。</remarks>
+    int Release();
 }
